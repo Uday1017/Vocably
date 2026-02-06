@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocably - Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-bold text-indigo-900 mb-2">Your Communication Report</h1>
+                <p class="text-xl text-gray-600" id="overallMessage"></p>
+            </div>
+
+            <!-- Overall Score Card -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
+                <div class="text-center">
+                    <h2 class="text-2xl font-semibold mb-4">Overall Score</h2>
+                    <div class="text-7xl font-bold mb-2" id="overallScore">--</div>
+                    <div class="text-lg opacity-90">out of 100</div>
+                </div>
+            </div>
+
+            <!-- Score Cards -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition">
+                    <div class="flex justify-center mb-3">
+                        <svg class="h-12 w-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-gray-600 font-semibold mb-2 text-lg">Grammar</h3>
+                    <div class="text-5xl font-bold mb-2" id="grammarScore">--</div>
+                    <div class="text-sm text-gray-500">out of 100</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition">
+                    <div class="flex justify-center mb-3">
+                        <svg class="h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-gray-600 font-semibold mb-2 text-lg">Fluency</h3>
+                    <div class="text-5xl font-bold mb-2" id="fluencyScore">--</div>
+                    <div class="text-sm text-gray-500">out of 100</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition">
+                    <div class="flex justify-center mb-3">
+                        <svg class="h-12 w-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-gray-600 font-semibold mb-2 text-lg">Politeness</h3>
+                    <div class="text-5xl font-bold mb-2" id="politenessScore">--</div>
+                    <div class="text-sm text-gray-500">out of 100</div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition">
+                    <div class="flex justify-center mb-3">
+                        <svg class="h-12 w-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-gray-600 font-semibold mb-2 text-lg">Body Language</h3>
+                    <div class="text-5xl font-bold mb-2" id="bodyLanguageScore">--</div>
+                    <div class="text-sm text-gray-500">out of 100</div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                    <svg class="h-7 w-7 text-indigo-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Presentation Statistics
+                </h2>
+                <div class="grid md:grid-cols-4 gap-4" id="statsContainer"></div>
+            </div>
+
+            <!-- Detailed Feedback -->
+            <div id="detailedFeedback"></div>
+
+            <!-- Learning Resources -->
+            <div id="resourcesSection"></div>
+
+            <!-- Transcript -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="h-7 w-7 text-indigo-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Full Transcript
+                </h2>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <p id="transcript" class="text-gray-700 leading-relaxed text-lg"></p>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="text-center pb-8">
+                <a href="/" class="inline-block bg-indigo-600 text-white px-10 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                    Analyze Another Video
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const results = JSON.parse(sessionStorage.getItem('results'));
+        
+        if (!results) {
+            window.location.href = '/';
+        } else {
+            // Overall Score
+            document.getElementById('overallScore').textContent = results.overall_score;
+            document.getElementById('overallScore').className = `text-7xl font-bold mb-2`;
+            document.getElementById('overallMessage').textContent = results.overall_message;
+
+            // Individual Scores
+            const grammarScore = document.getElementById('grammarScore');
+            grammarScore.textContent = results.grammar_score;
+            grammarScore.className = `text-5xl font-bold mb-2 ${getScoreColor(results.grammar_score)}`;
+            
+            const fluencyScore = document.getElementById('fluencyScore');
+            fluencyScore.textContent = results.fluency_score;
+            fluencyScore.className = `text-5xl font-bold mb-2 ${getScoreColor(results.fluency_score)}`;
+            
+            const politenessScore = document.getElementById('politenessScore');
+            politenessScore.textContent = results.politeness_score;
+            politenessScore.className = `text-5xl font-bold mb-2 ${getScoreColor(results.politeness_score)}`;
+
+            // Body Language Score
+            const bodyLanguageScore = document.getElementById('bodyLanguageScore');
+            if (results.body_language_score) {
+                bodyLanguageScore.textContent = results.body_language_score;
+                bodyLanguageScore.className = `text-5xl font-bold mb-2 ${getScoreColor(results.body_language_score)}`;
+            } else {
+                bodyLanguageScore.textContent = 'N/A';
+                bodyLanguageScore.className = 'text-3xl font-bold mb-2 text-gray-400';
+            }
+
+            // Statistics
+            const statsContainer = document.getElementById('statsContainer');
+            const stats = [
+                { label: 'Total Words', value: results.stats.total_words, icon: '📝' },
+                { label: 'Sentences', value: results.stats.total_sentences, icon: '📄' },
+                { label: 'Grammar Errors', value: results.stats.grammar_errors, icon: '❌' },
+                { label: 'Filler Words', value: results.stats.filler_words, icon: '🔄' },
+                { label: 'Polite Expressions', value: results.stats.polite_expressions, icon: '✨' }
+            ];
+            
+            // Add video stats if available
+            if (results.video_stats) {
+                stats.push(
+                    { label: 'Eye Contact', value: results.video_stats.eye_contact_percentage + '%', icon: '👁️' },
+                    { label: 'Hand Gestures', value: results.video_stats.hand_movements, icon: '👋' },
+                    { label: 'Smile Rate', value: results.video_stats.smile_percentage + '%', icon: '😊' }
+                );
+            }
+            
+            stats.forEach(stat => {
+                statsContainer.innerHTML += `
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-4 text-center">
+                        <div class="text-3xl mb-2">${stat.icon}</div>
+                        <div class="text-2xl font-bold text-indigo-900">${stat.value}</div>
+                        <div class="text-sm text-gray-600 mt-1">${stat.label}</div>
+                    </div>
+                `;
+            });
+
+            // Detailed Feedback
+            const feedbackContainer = document.getElementById('detailedFeedback');
+            results.detailed_feedback.forEach(feedback => {
+                const statusColor = feedback.status === 'excellent' ? 'green' : 
+                                   feedback.status === 'good' ? 'blue' : 'orange';
+                const statusBg = feedback.status === 'excellent' ? 'bg-green-100' : 
+                                feedback.status === 'good' ? 'bg-blue-100' : 'bg-orange-100';
+                const statusText = feedback.status === 'excellent' ? 'text-green-800' : 
+                                  feedback.status === 'good' ? 'text-blue-800' : 'text-orange-800';
+                
+                let issuesHTML = '';
+                if (feedback.issues.length > 0) {
+                    issuesHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-700 mb-2">Issues Found:</h4>
+                            <div class="bg-red-50 rounded-lg p-4 space-y-1">
+                                ${feedback.issues.map(issue => `<p class="text-gray-700">${issue}</p>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                feedbackContainer.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-2xl font-semibold text-gray-800">${feedback.category} Analysis</h2>
+                            <span class="${statusBg} ${statusText} px-4 py-2 rounded-full font-semibold text-sm">
+                                Score: ${feedback.score}/100
+                            </span>
+                        </div>
+                        
+                        <p class="text-lg text-gray-700 mb-6">${feedback.summary}</p>
+                        
+                        ${issuesHTML}
+                        
+                        <div>
+                            <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                <svg class="h-5 w-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                Actionable Suggestions:
+                            </h4>
+                            <ul class="space-y-2">
+                                ${feedback.suggestions.map(suggestion => `
+                                    <li class="flex items-start space-x-3">
+                                        <svg class="h-6 w-6 text-${statusColor}-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="text-gray-700">${suggestion}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Learning Resources
+            if (results.resources && results.resources.length > 0) {
+                const resourcesSection = document.getElementById('resourcesSection');
+                resourcesSection.innerHTML = `
+                    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-xl p-8 mb-8 text-white">
+                        <h2 class="text-3xl font-semibold mb-2 flex items-center">
+                            <svg class="h-8 w-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Recommended Learning Resources
+                        </h2>
+                        <p class="text-lg opacity-90 mb-6">Curated resources to help you improve</p>
+                        
+                        ${results.resources.map(resource => `
+                            <div class="mb-6 last:mb-0">
+                                <h3 class="text-xl font-semibold mb-4">${resource.category} Resources:</h3>
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    ${resource.items.map(item => `
+                                        <a href="${item.url}" target="_blank" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg p-4 transition transform hover:scale-105">
+                                            <div class="flex items-center mb-2">
+                                                <span class="text-2xl mr-2">${item.type === 'YouTube' ? '🎥' : item.type === 'Blog' ? '📝' : '🎓'}</span>
+                                                <span class="text-sm font-semibold">${item.type}</span>
+                                            </div>
+                                            <p class="font-medium">${item.title}</p>
+                                            <p class="text-sm opacity-75 mt-1">Click to learn more →</p>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Transcript
+            document.getElementById('transcript').textContent = results.transcript;
+        }
+
+        function getScoreColor(score) {
+            if (score >= 85) return 'text-green-600';
+            if (score >= 70) return 'text-blue-600';
+            if (score >= 60) return 'text-yellow-600';
+            return 'text-red-600';
+        }
+    </script>
+</body>
+</html>

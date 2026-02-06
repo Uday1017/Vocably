@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vocably</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold text-indigo-600">Vocably</div>
+                <div class="flex items-center space-x-6">
+                    <span id="userName" class="text-gray-700"></span>
+                    <a href="/dashboard" class="text-indigo-600 font-medium">Dashboard</a>
+                    <a href="/" class="text-gray-700 hover:text-indigo-600 transition">Home</a>
+                    <button id="logoutBtn" class="text-gray-700 hover:text-red-600 transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-12">
+        <!-- Welcome Section -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Welcome back, <span id="userNameTitle"></span>!</h1>
+            <p class="text-xl text-gray-600">Upload a new presentation or review your progress</p>
+        </div>
+
+        <!-- Progress Chart Section -->
+        <div id="progressSection" class="hidden bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Your Progress</h2>
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="text-center">
+                    <div id="grammarImprovement" class="text-3xl font-bold mb-1"></div>
+                    <div class="text-sm text-gray-600">Grammar Improvement</div>
+                </div>
+                <div class="text-center">
+                    <div id="fluencyImprovement" class="text-3xl font-bold mb-1"></div>
+                    <div class="text-sm text-gray-600">Fluency Improvement</div>
+                </div>
+                <div class="text-center">
+                    <div id="politenessImprovement" class="text-3xl font-bold mb-1"></div>
+                    <div class="text-sm text-gray-600">Politeness Improvement</div>
+                </div>
+                <div class="text-center">
+                    <div id="overallImprovement" class="text-3xl font-bold mb-1"></div>
+                    <div class="text-sm text-gray-600">Overall Improvement</div>
+                </div>
+            </div>
+            <canvas id="progressChart" height="80"></canvas>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Upload New Presentation</h2>
+            
+            <form id="uploadForm" class="space-y-6">
+                <div class="border-2 border-dashed border-indigo-300 rounded-lg p-12 text-center hover:border-indigo-500 transition bg-indigo-50">
+                    <input type="file" id="videoFile" accept="video/*" class="hidden" required>
+                    <label for="videoFile" class="cursor-pointer">
+                        <svg class="mx-auto h-20 w-20 text-indigo-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <span class="text-xl text-gray-700 font-medium" id="fileName">Click to select video file</span>
+                        <p class="text-sm text-gray-500 mt-3">MP4, AVI, MOV, or MKV • Max 500MB</p>
+                    </label>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Analyze Presentation
+                </button>
+            </form>
+
+            <div id="loading" class="hidden mt-6">
+                <div class="bg-indigo-50 rounded-lg p-6">
+                    <div class="flex items-center justify-center space-x-3 mb-4">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                        <span class="text-gray-700 font-medium">Processing your video...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Submissions -->
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Recent Analyses</h2>
+            <div id="analysesList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/me');
+                if (!response.ok) {
+                    window.location.href = '/login';
+                    return;
+                }
+                currentUser = await response.json();
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userNameTitle').textContent = currentUser.name;
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        async function loadAnalyses() {
+            try {
+                const response = await fetch('/api/analyses');
+                const analyses = await response.json();
+                
+                const analysesList = document.getElementById('analysesList');
+                
+                if (analyses.length === 0) {
+                    analysesList.innerHTML = `
+                        <div class="text-center py-12 text-gray-500">
+                            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-lg">No analyses yet</p>
+                            <p class="text-sm mt-2">Upload your first presentation to get started</p>
+                        </div>
+                    `;
+                } else {
+                    analysesList.innerHTML = analyses.map(a => `
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-gray-900 mb-2">${a.filename}</h3>
+                                    <p class="text-sm text-gray-600 mb-3">${new Date(a.created_at).toLocaleString()}</p>
+                                    <div class="flex space-x-6">
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-green-600">${a.grammar_score}</div>
+                                            <div class="text-xs text-gray-500">Grammar</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-blue-600">${a.fluency_score}</div>
+                                            <div class="text-xs text-gray-500">Fluency</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-purple-600">${a.politeness_score}</div>
+                                            <div class="text-xs text-gray-500">Politeness</div>
+                                        </div>
+                                        ${a.body_language_score ? `
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-orange-600">${a.body_language_score}</div>
+                                            <div class="text-xs text-gray-500">Body Language</div>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading analyses:', error);
+            }
+        }
+
+        async function loadProgress() {
+            try {
+                const response = await fetch('/api/progress');
+                const progress = await response.json();
+                
+                if (progress.has_progress) {
+                    document.getElementById('progressSection').classList.remove('hidden');
+                    
+                    const improvement = progress.improvement;
+                    document.getElementById('grammarImprovement').textContent = (improvement.grammar > 0 ? '+' : '') + improvement.grammar;
+                    document.getElementById('grammarImprovement').className = `text-3xl font-bold mb-1 ${improvement.grammar >= 0 ? 'text-green-600' : 'text-red-600'}`;
+                    
+                    document.getElementById('fluencyImprovement').textContent = (improvement.fluency > 0 ? '+' : '') + improvement.fluency;
+                    document.getElementById('fluencyImprovement').className = `text-3xl font-bold mb-1 ${improvement.fluency >= 0 ? 'text-green-600' : 'text-red-600'}`;
+                    
+                    document.getElementById('politenessImprovement').textContent = (improvement.politeness > 0 ? '+' : '') + improvement.politeness;
+                    document.getElementById('politenessImprovement').className = `text-3xl font-bold mb-1 ${improvement.politeness >= 0 ? 'text-green-600' : 'text-red-600'}`;
+                    
+                    document.getElementById('overallImprovement').textContent = (improvement.overall > 0 ? '+' : '') + improvement.overall;
+                    document.getElementById('overallImprovement').className = `text-3xl font-bold mb-1 ${improvement.overall >= 0 ? 'text-green-600' : 'text-red-600'}`;
+                    
+                    const ctx = document.getElementById('progressChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: progress.dates,
+                            datasets: [
+                                {
+                                    label: 'Grammar',
+                                    data: progress.grammar,
+                                    borderColor: 'rgb(34, 197, 94)',
+                                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'Fluency',
+                                    data: progress.fluency,
+                                    borderColor: 'rgb(59, 130, 246)',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'Politeness',
+                                    data: progress.politeness,
+                                    borderColor: 'rgb(168, 85, 247)',
+                                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                                    tension: 0.4
+                                },
+                                {
+                                    label: 'Overall',
+                                    data: progress.overall,
+                                    borderColor: 'rgb(99, 102, 241)',
+                                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                    tension: 0.4,
+                                    borderWidth: 3
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/';
+        });
+
+        const fileInput = document.getElementById('videoFile');
+        const fileName = document.getElementById('fileName');
+        const uploadForm = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+        const submitBtn = document.getElementById('submitBtn');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileName.textContent = e.target.files[0].name;
+            }
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            submitBtn.disabled = true;
+            loading.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-video', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Analysis failed');
+
+                const data = await response.json();
+                sessionStorage.setItem('results', JSON.stringify(data));
+                window.location.href = '/results';
+            } catch (error) {
+                alert('Error: ' + error.message);
+                submitBtn.disabled = false;
+                loading.classList.add('hidden');
+            }
+        });
+
+        loadUserData();
+        loadAnalyses();
+        loadProgress();
+    </script>
+</body>
+</html>

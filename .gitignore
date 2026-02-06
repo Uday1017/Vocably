@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+uploads/
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wav
+venv/
+env/
+.env
+.venv

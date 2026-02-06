@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+moviepy
+openai-whisper
+torch
+language-tool-python
+nltk
+opencv-python
+numpy==1.26.4
+sqlalchemy
+bcrypt
+python-jose[cryptography]
