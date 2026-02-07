@@ -1,103 +1,192 @@
-# Vocably - AI Communication Coach
+# FluentIQ – AI-Powered Communication Feedback Platform
 
-Vocably allows users to upload presentation videos and receive structured feedback on communication quality including grammar, fluency, and politeness.
+FluentIQ is a full-stack AI-powered web platform that evaluates grammar, fluency, politeness, and body language in presentation videos, providing comprehensive feedback to enhance communication skills.
 
 ## System Architecture
 
 ```
-Frontend (Upload UI)
+Next.js Frontend (Port 3000)
         ↓
-FastAPI Backend
+Django REST API (Port 8000)
         ↓
-Audio Extraction + Transcription
+Celery Workers (Async Processing)
         ↓
-NLP Feedback Engine
+PostgreSQL Database + Redis Queue
         ↓
-Scoring + Response Generation
-        ↓
-Results Page (Frontend)
+AI Models (Whisper, LanguageTool, OpenCV)
 ```
 
 ## Tech Stack
 
-**Frontend:** HTML + TailwindCSS
-**Backend:** FastAPI (Python)
-**NLP:** Whisper, LanguageTool, NLTK
+**Frontend:** Next.js 14 + TypeScript + Tailwind CSS (Coming Soon)
+**Backend:** Django REST Framework + PostgreSQL + Celery + Redis
+**NLP:** Whisper, LanguageTool, NLTK, OpenCV
 
 ## Installation
 
-1. Install dependencies:
+### Backend Setup
+
+1. Navigate to backend:
+```bash
+cd backend
+```
+
+2. Create virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Run the server:
+4. Setup PostgreSQL and create database:
 ```bash
-python main.py
+createdb fluentiq
 ```
 
-3. Open browser:
+5. Configure environment:
+```bash
+cp .env.example .env
+# Edit .env with your credentials
 ```
-http://localhost:8000
+
+6. Run migrations:
+```bash
+python manage.py migrate
+```
+
+7. Start Redis:
+```bash
+redis-server
+```
+
+8. Start Celery worker (new terminal):
+```bash
+celery -A fluentiq worker -l info
+```
+
+9. Start Django server:
+```bash
+python manage.py runserver
+```
+
+### Docker Setup (Recommended)
+
+```bash
+cd backend
+docker-compose up --build
 ```
 
 ## Features
 
-### Frontend
-- Video upload interface
-- Real-time processing feedback
-- Score visualization
-- Detailed feedback display
+### Backend (Django REST Framework)
+- RESTful API architecture
+- Asynchronous video processing with Celery
+- PostgreSQL database for data persistence
+- Redis for task queue and caching
+- User authentication and authorization
+- Progress tracking over time
 
-### Backend Modules
+### AI Analysis Modules
 
-**1. Video Processing Module**
-- Receives uploaded video
-- Extracts audio from video
+**1. Video Processing**
+- Asynchronous upload and processing
+- Audio extraction from video
+- Support for multiple formats (MP4, AVI, MOV, MKV)
 
-**2. Speech-to-Text Module**
-- Converts audio to text using Whisper
-- Generates transcript
+**2. Speech-to-Text**
+- Whisper AI for accurate transcription
+- Multi-language support
 
 **3. NLP Feedback Engine**
-- Grammar analysis (sentence structure, errors)
-- Fluency analysis (filler words, repetition)
+- Grammar analysis using LanguageTool
+- Fluency analysis (filler words, repetitions)
 - Politeness analysis (tone, formality)
+- Body language analysis using OpenCV
 
-**4. Scoring Engine**
+**4. Scoring System**
 - Grammar Score (0-100)
 - Fluency Score (0-100)
 - Politeness Score (0-100)
-- Improvement suggestions
+- Body Language Score (0-100)
+- Overall Communication Score
+- Detailed feedback with suggestions
 
-**5. API Layer**
-- `POST /analyze-video` - Main analysis endpoint
+**5. API Endpoints**
+- `POST /api/auth/register/` - User registration
+- `POST /api/auth/login/` - User login
+- `POST /api/analyses/` - Upload video
+- `GET /api/analyses/` - List analyses
+- `GET /api/analyses/{id}/` - Get analysis details
+- `GET /api/analyses/progress/` - Track improvement
 
 ## Design Decisions
 
-- **FastAPI** chosen for quick API development and async support
-- **TailwindCSS** used for fast, responsive UI styling
-- **Pipeline architecture** separates processing steps for maintainability
-- **Modular backend** allows easy extension and testing
-- **Real-time processing** - no database needed for MVP
-- **Whisper** for accurate speech recognition
-- **LanguageTool** for comprehensive grammar checking
+- **Django REST Framework** - Robust, scalable API development
+- **PostgreSQL** - Reliable relational database for production
+- **Celery + Redis** - Asynchronous task processing for video analysis
+- **Docker** - Containerization for consistent deployment
+- **Modular architecture** - Separation of concerns for maintainability
+- **Session-based auth** - Secure authentication system
+- **Whisper AI** - State-of-the-art speech recognition
+- **LanguageTool** - Comprehensive grammar checking
+- **OpenCV** - Computer vision for body language analysis
 
 ## Storage
 
-Currently uses real-time processing without permanent storage. Videos and audio files are deleted after analysis. A database (SQLite/PostgreSQL) can be added to store user history.
+- **PostgreSQL** - User data, analysis results, and metadata
+- **File Storage** - Videos stored in media directory
+- **Redis** - Task queue and caching
+- **Historical Data** - All analyses saved for progress tracking
 
 ## API Response Format
 
 ```json
 {
+  "id": 1,
+  "status": "completed",
   "transcript": "Full transcription text...",
-  "grammar_score": 82,
-  "fluency_score": 76,
-  "politeness_score": 88,
-  "feedback": [
-    "Grammar: Found 3 errors. Review sentence structure.",
-    "Fluency: Reduce filler words (found 5). Practice pausing instead."
-  ]
+  "grammar_score": 82.5,
+  "fluency_score": 76.3,
+  "politeness_score": 88.0,
+  "body_language_score": 75.5,
+  "overall_score": 80.6,
+  "detailed_feedback": [
+    {
+      "category": "Grammar",
+      "score": 82,
+      "status": "good",
+      "summary": "Found 3 grammatical errors.",
+      "suggestions": ["Review sentence structure", "Use grammar tools"]
+    }
+  ],
+  "video_stats": {
+    "eye_contact_percentage": 75.5,
+    "hand_usage_percentage": 65.0
+  },
+  "created_at": "2024-01-15T10:30:00Z"
 }
+```
+
+## Deployment
+
+See [backend/README.md](backend/README.md) for detailed deployment instructions.
+
+## Project Structure
+
+```
+FluentIQ/
+├── backend/
+│   ├── fluentiq/          # Django project settings
+│   ├── api/               # REST API app
+│   ├── core/              # Core models
+│   ├── media/             # Uploaded videos
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── frontend/              # Legacy HTML (to be replaced with Next.js)
+└── README.md
 ```
